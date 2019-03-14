@@ -94,16 +94,25 @@ for idx, row in scoped.iterrows():
 scoped.drop(columns=['County', 'State'], inplace=True)
 scoped.fillna(-1, inplace=True)
 
+
+to_drop = ["FOODINSEC_10_12", "FOODINSEC_13_15", "CH_FOODINSEC_12_15", 
+           "VLFOODSEC_10_12", "VLFOODSEC_13_15", "CH_VLFOODSEC_12_15", 
+           "FOODINSEC_CHILD_01_07", "FOODINSEC_CHILD_03_11"]
+scoped.drop(columns=to_drop, inplace=True)
+
+# Write to csv so it has child and adult food insecurity
+scoped.to_csv('./data/prepped/compiled_data.csv', sep=',')
+outcome = scoped.Food_Insec_Children
+scoped.drop(columns=["Food_Insec", "Food_Insec_Children", "FIPS", "FIPS"], inplace=True)
+
 # Train, test, split
 train_features, test_features, train_outcome, test_outcome = train_test_split(
     scoped, #features
-    scoped.Food_Insec_Children, #outcome # or scoped['FOODINSEC_CHILD_03_11']
+    outcome, #outcome # or scoped['FOODINSEC_CHILD_03_11']
     test_size=0.30, #percent of data to use as test set
     random_state=11
 )
 
-
-scoped.to_csv('./data/prepped/compiled_data.csv', sep=',')
 
 train_features.to_csv('./data/prepped/train_features.csv', sep=',')
 test_features.to_csv('./data/prepped/test_features.csv', sep=',')
